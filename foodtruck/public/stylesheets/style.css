@@ -1,0 +1,170 @@
+#navBar {
+	position: fixed;
+	background-color: blue;
+	width: 100%;
+	top: 0px;
+	font-size: 15px;
+}
+#navBar li {
+	display: inline;
+	border-right: 1px solid black;
+	border-left: 1px solid black;
+}
+
+#navBar li:last-child {
+	border-right: none;
+}
+
+#navBar li:first-child {
+	border-left: none;
+}
+
+#navBar li a {
+	text-align: center;
+	width: 24%;
+	display: inline-block;
+	color: black;
+}
+
+#navBar li:hover {
+	background-color: white;
+}
+
+/*#footer {
+	text-align: center;
+	position: absolute;
+	bottom: 0;
+	color: white;
+	width: 100%;
+}
+*/
+h1 {
+	text-align: center;
+	font-size: 40px;
+	color: black;
+}
+
+h3 {
+	font-size: 15px;
+	color: black;
+}
+
+.text {
+	text-align: center;
+	color:black;
+	font-size: 20px;
+}
+
+#error {
+	color: white;
+	text-align: center;
+	font-size: 60px;
+	padding-top: 20%;
+}
+
+.border {
+	border: 1px solid black;
+	width: 100%;
+	height: 725px;
+	overflow-y: scroll;
+}
+
+#stock img {
+	width: 100%;
+	height: auto;
+}
+
+#box1, #box2 {
+	float:left;
+	width: 50%;
+	text-align: center;
+}
+
+/*#list ul {
+	text-align: left;
+}
+
+#list {
+	padding-top: 10px;
+	padding-left: 20%;
+	padding-right: 20%;
+}
+
+#list li {
+	padding-bottom: 20px;
+	list-style: none;
+}
+
+#list li:before {
+	content: "\2022";
+	color: red;
+	padding-right: 5px;
+}*/
+
+button {
+	padding: 10px 10px 10px 10px;
+	cursor: pointer;
+	border: none;
+	background-color: red;
+	color: white;
+	font-size: 20px;
+}
+
+#button_right {
+	position: absolute;
+	top: 47%;
+	left: 67.8%;
+	border-radius: 10px;
+}
+
+#button_left {
+	position: absolute;
+	top: 47%;
+	right: 67.8%;
+	border-radius: 10px;
+}
+
+#download, #submit {
+	margin:0 auto;
+	border-radius: 10px;
+}
+
+/*button:hover {
+	background-color: black;
+	border: red solid 1px;
+}*/
+
+#contact {
+	text-align: left;
+	border:solid white 1px;
+	padding: 30px;
+	margin-left: 30%;
+	margin-right: 30%;
+}
+
+#contact input,textarea {
+	text-align: left;
+	background-color: red;
+	border: none;
+	margin-top: 10px;
+	color: white;
+	border-radius: 10px;
+}
+
+#email, #subject {
+	width: 40%;
+}
+
+#message {
+	width: 100%;
+	height: 200px;
+}
+
+body {
+	background-color: white;
+	padding: 0;
+}
+
+#container {
+	font-family: 'Roboto', sans-serif;
+}
