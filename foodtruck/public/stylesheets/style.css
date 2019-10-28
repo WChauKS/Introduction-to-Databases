@@ -7,21 +7,21 @@
 }
 #navBar li {
 	display: inline;
-	border-right: 1px solid black;
-	border-left: 1px solid black;
+/*	border-right: 1px solid black;
+	border-left: 1px solid black;*/
 }
 
-#navBar li:last-child {
+/*#navBar li:last-child {
 	border-right: none;
 }
 
 #navBar li:first-child {
 	border-left: none;
-}
+}*/
 
 #navBar li a {
 	text-align: center;
-	width: 24%;
+	width: 18%;
 	display: inline-block;
 	color: black;
 }
@@ -39,7 +39,7 @@
 }
 */
 h1 {
-	text-align: center;
+	text-align: left;
 	font-size: 40px;
 	color: black;
 }

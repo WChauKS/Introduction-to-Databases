@@ -22,9 +22,29 @@ app.get('/',function(req,res){
   res.render('home');
 });
 
-app.get('/contact', function(req,res){
-  res.render('contact');
+app.get('/addtruck', function(req,res){
+  res.render('addtruck');
 });
+
+app.get('/filter', function(req,res){
+  res.render('filter');
+});
+
+app.get('/timeslot', function(req,res){
+  res.render('timeslot');
+});
+
+app.get('/truckschedule', function(req,res){
+  res.render('truckschedule');
+});
+
+app.get('/website', function(req,res){
+  res.render('website');
+});
+
+// app.get('/contact', function(req,res){
+//   res.render('contact');
+// });
 
 app.use(function(req,res){
   res.status(404);
