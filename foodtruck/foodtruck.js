@@ -34,6 +34,10 @@ app.get('/timeslot', function(req,res){
   res.render('timeslot');
 });
 
+app.get('/location', function(req,res){
+  res.render('location');
+});
+
 app.get('/truckschedule', function(req,res){
   res.render('truckschedule');
 });

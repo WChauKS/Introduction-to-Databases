@@ -21,13 +21,13 @@
 
 #navBar li a {
 	text-align: center;
-	width: 18%;
+	width: 15%;
 	display: inline-block;
-	color: black;
+	color: white;
 }
 
 #navBar li:hover {
-	background-color: white;
+	background-color: darkblue;
 }
 
 /*#footer {
@@ -168,3 +168,15 @@ body {
 #container {
 	font-family: 'Roboto', sans-serif;
 }
+
+form {
+	width: 20%;
+    margin: 0;
+}
+
+.styledSelect {
+	/*float:right;*/
+	display: inline-block;
+	width: 30%;
+}
+
