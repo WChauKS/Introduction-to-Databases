@@ -1,0 +1,22 @@
+<br><br><h1>Add Food Trucks</h1>
+<form id="addtruck" action="/addtruck" method="post">
+  Add Truck Name:<br>
+  <input type="text" name="truckName"><br><br>
+  <input type="submit" value="Add Truck Name" id="addTruckName"><br>
+</form>
+
+<h3>Current Food Trucks:</h3>
+<table>
+	<thead>
+		<th>ID</th>
+		<th>Name</th>
+	</thead>
+	<tbody>
+		{{#each truck}}
+		<tr>
+			<td>{{food_truck_id}}</td>
+			<td>{{food_truck_name}}</td>
+		</tr>
+		{{/each}}
+	</tbody>
+</table>

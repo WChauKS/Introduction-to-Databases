@@ -1,0 +1,27 @@
+<br><br><h1>Filter Food Trucks</h1>
+<form>
+  Food Truck:<br>
+  <select class="styledSelect" name="foodtrucks" id="foodtruckID">
+    {{#each truck}}
+    <option value={{food_truck_id}}>{{food_truck_name}}</option>
+    {{/each}}
+  </select><br><br>
+  Location:<br>
+  <select class="styledSelect" name="location" id="locationID">
+    {{#each truck}}
+    <option value={{location_id}}>{{location_name}}</option>
+    {{/each}}
+  </select><br>
+   <br>
+  Time Slot:<br>
+  <select class="styledSelect" name="timeslot" id="timeslotID">
+    {{#each truck}}
+    <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
+    {{/each}}
+  </select><br><br>
+  <input type="submit" value="Filter" id="filter"><br>
+</form>
+<form action = "/reset-database" method = "get">
+<input type="submit" value="Reset Database" id="resetDatabaseButton">
+</form>
+<div><p>{{statusMsg}}</p></div>

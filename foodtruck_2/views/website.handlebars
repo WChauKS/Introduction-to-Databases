@@ -1,0 +1,42 @@
+<br><br><h1>Website</h1>
+<form id="addWebsite" action="/website" method="post">
+  Food Truck:<br>
+  <select class="styledSelect" name="foodtrucks" id="webpageFoodTruck">
+    {{#each truck}}
+    <option value={{food_truck_id}}>{{food_truck_name}}</option>
+    {{/each}}
+  </select>
+   <br><br>
+  Website Link:<br>
+  	<input type="text" name="website">
+   <br><br>
+   	<input type="submit" value="Add Website" id="addWebsite">
+</form> 
+<br><br>
+Search for a food truck's Website:<br>
+<form id="seachTruck" action="/search" method="get">
+  Food Truck:<br>
+  <select class="styledSelect" name="foodtrucks" id="foodtruckID">
+    {{#each truck}}
+    <option value={{food_truck_id}}>{{food_truck_name}}</option>
+    {{/each}}
+  </select><br><br>
+  <input type="button" value="Search"><br>
+</form>
+<div><p>{{food_truck_name}} {{website_name}}</p></div>
+
+<h3>Current Food Trucks and Websites:</h3>
+<table>
+  <thead>
+    <th>ID</th>
+    <th>Website</th>
+  </thead>
+  <tbody>
+    {{#each truck}}
+    <tr>
+      <td>{{food_truck_name}}</td>
+      <td>{{website_name}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

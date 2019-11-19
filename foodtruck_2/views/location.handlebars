@@ -1,0 +1,22 @@
+<br><br><h1>Add Location</h1>
+<form id="location" action="/location" method="post">
+  Add Location Name:<br>
+  <input type="text" id="location"><br><br>
+  <input type="submit" value="Add Location Name" id="addLocationName"><br>
+</form>
+
+<h3>Current Locations:</h3>
+<table>
+	<thead>
+		<th>ID</th>
+		<th>Name</th>
+	</thead>
+	<tbody>
+		{{#each truck}}
+		<tr>
+			<td>{{location_id}}</td>
+			<td>{{location_name}}</td>
+		</tr>
+		{{/each}}
+	</tbody>
+</table>

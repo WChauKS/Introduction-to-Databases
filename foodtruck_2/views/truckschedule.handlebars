@@ -1,0 +1,50 @@
+<br><br><h1>Truck Schedule</h1>
+<form id="addSchedule action="/truckschedule" method="post"">
+  Food Truck:<br>
+  <select class="styledSelect" name="truckName" id="foodtruckID">
+    {{#each truck}}
+    <option value={{food_truck_id}}>{{food_truck_name}}</option>
+    {{/each}}
+  </select>
+   <br><br>
+  Location:<br>
+  <select class="styledSelect" name="location" id="locationID">
+    {{#each truck}}
+    <option value={{location_id}}>{{location_name}}</option>
+    {{/each}}
+  </select>
+   <br><br>
+  Time Slot:<br>
+  <select class="styledSelect" name="timeslot" id="foodtruckID">
+    {{#each truck}}
+    <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
+    {{/each}}
+  </select>
+   <br>
+   <br>
+   	<input type="submit" value="Add Truck Schedule" id="addTruckSchedule">
+   <br>
+   	<input type="submit" value="Update Truck Schedule" id="updateTruckSchedule">
+   <br>
+   	<input type="submit" value="Remove Truck Schedule" id="removeTruckSchedule">
+</form> 
+
+<h3>Current Truck Schedule:</h3>
+<table>
+  <thead>
+    <th>Food Truck</th>
+    <th>Location</th>
+    <th>Day of the Week</th>
+    <th>Time of Day</th>
+  </thead>
+  <tbody>
+    {{#each truck}}
+    <tr>
+      <td>{{food_truck_name}}</td>
+      <td>{{location_name}}</td>
+      <td>{{day_of_week}}</td>
+      <td>{{time_of_day}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

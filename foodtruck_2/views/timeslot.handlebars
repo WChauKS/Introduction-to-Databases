@@ -1,0 +1,40 @@
+<br><br><h1>Add Time Slots</h1>
+<form id="addTime action="/timeslot" method="post">
+  Day Of Week:<br>
+  <select class="styledSelect" name="dayOfWeek" id="dayOfWeek">
+    <option value="0">Monday</option>
+    <option value="1">Tuesday</option>
+    <option value="2">Wednesday</option>
+    <option value="3">Thursday</option>
+    <option value="4">Friday</option>
+    <option value="5">Saturday</option>
+    <option value="6">Sunday</option>
+  </select>
+   <br><br>
+  Time Of Day:<br>
+  <select class="styledSelect" name="timeOfDay" id="timeOfDay">
+    <option value="0">Breakfast</option>
+    <option value="1">Lunch</option>
+    <option value="2">Dinner</option>
+  </select>
+   <br><br>
+   	<input type="submit" value="Add Time Slots" id="addTimeSlots">
+</form> 
+
+<h3>Current Time Slots:</h3>
+<table>
+  <thead>
+    <th>ID</th>
+    <th>Day of the Week</th>
+    <th>Time of Day</th>
+  </thead>
+  <tbody>
+    {{#each truck}}
+    <tr>
+      <td>{{time_slot_id}}</td>
+      <td>{{day_of_week}}</td>
+      <td>{{time_of_day}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
