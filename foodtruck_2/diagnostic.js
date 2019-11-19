@@ -28,6 +28,23 @@ app.get('/',function(req,res){
     }else{
       // console.log(results[0].food_truck_id);
       // console.log(results[0].food_truck_name);
+      for (i=0; i < results.length; i++){
+        switch(results[i].day_of_week){
+          case 0: results[i].day_of_week="Monday";break;
+          case 1: results[i].day_of_week="Tuesday";break;
+          case 2: results[i].day_of_week="Wednesday";break;
+          case 3: results[i].day_of_week="Thursday";break;
+          case 4: results[i].day_of_week="Friday";break;
+          case 5: results[i].day_of_week="Saturday";break;
+          case 6: results[i].day_of_week="Sunday";break;
+
+        }
+        switch(results[i].time_of_day){
+          case 0: results[i].time_of_day="Breakfast";break;
+          case 1: results[i].time_of_day="Lunch";break;
+          case 2: results[i].time_of_day="Dinner";break;
+        }
+      }
       context.truck = results
       res.render('home', context);
     }
