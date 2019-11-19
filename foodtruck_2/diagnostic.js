@@ -20,11 +20,13 @@ app.use(express.static(path.join(__dirname, '/public')));
 
 app.get('/',function(req,res){
   var context = {};
+  var sql = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id";
 
-  mysql.pool.query("SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id", function(err, results) {
-    if(err) {
-      next(err);
-      return;
+  mysql.pool.query(sql, function(error, results) {
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
     }else{
       // console.log(results[0].food_truck_id);
       // console.log(results[0].food_truck_name);
@@ -242,8 +244,8 @@ app.get('/website', function(req,res){
 
 app.post ('/website', function(req, res){
   var mysql = req.app.get('mysql');
-  var sql = "INSERT INTO website (website_name) VALUES (?)";
-  var inserts = [req.body.website];
+  var sql = "INSERT INTO website (website_name, food_truck_id) VALUES (?, ?)";
+  var inserts = [req.body.website, req.body.foodtrucks];
   sql = mysql.pool.query(sql, inserts, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
