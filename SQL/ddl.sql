@@ -21,7 +21,7 @@ CREATE TABLE `timeslot` (
 -- 0=Breakfast, 1=Lunch, 2=Dinner
 LOCK TABLES `timeslot` WRITE;
 -- INSERT INTO `timeslot` VALUES (1, 0, 0), (2, 0, 1), (3, 0, 2), (4, 1, 0), (5, 1, 1), (6, 1, 2), (7, 2, 0), (8, 2, 1), (9, 2, 2), (10, 3, 0), (11, 3, 1), (12, 3, 2), (13, 4, 0), (14, 4, 1), (15, 4, 2), (16, 5, 0), (17, 5, 1), (18, 5, 2), (19, 6, 0), (20, 6, 1), (21, 6, 2);
-INSERT INTO `timeslot` VALUES (1, 3, 1), (2, 0, 1)
+INSERT INTO `timeslot` VALUES (1, 3, 1), (2, 0, 1);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `location`;
@@ -60,7 +60,7 @@ CREATE TABLE `truckschedule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `truckschedule` WRITE;
-INSERT INTO `truckschedule` VALUES (1, 11, 1), (2, 2, 2), (3, 2, 3);
+INSERT INTO `truckschedule` VALUES (1, 1, 1), (2, 2, 2), (3, 2, 3);
 UNLOCK TABLES;
 
 -- SHOW TABLES

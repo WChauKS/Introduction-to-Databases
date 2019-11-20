@@ -8,14 +8,14 @@
   </select><br><br>
   Location:<br>
   <select class="styledSelect" name="location" id="locationID">
-    {{#each truck}}
+    {{#each location}}
     <option value={{location_id}}>{{location_name}}</option>
     {{/each}}
   </select><br>
    <br>
   Time Slot:<br>
   <select class="styledSelect" name="timeslot" id="timeslotID">
-    {{#each truck}}
+    {{#each time}}
     <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
     {{/each}}
   </select><br><br>
