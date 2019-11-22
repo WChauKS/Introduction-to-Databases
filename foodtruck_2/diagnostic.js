@@ -2,6 +2,7 @@ var express = require('express');
 var mysql = require('./dbcon.js');
 var path = require('path');
 var bodyParser = require('body-parser');
+var router = express.Router();
 
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
@@ -22,7 +23,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.get('/', function(req,res){
   var mysql = req.app.get('mysql');
   var context = [];
-  var sql = ["SELECT * FROM foodtruck", "SELECT * FROM location", "SELECT * FROM timeslot"];
+  var sql = ["SELECT * FROM foodtruck GROUP BY food_truck_name HAVING COUNT(*)=1", "SELECT * FROM location GROUP BY location_name HAVING COUNT(*)=1", "SELECT * FROM timeslot"];
 
   mysql.pool.query(sql[0], function(error, results){
     if(error){
@@ -31,7 +32,7 @@ app.get('/', function(req,res){
       res.end();
     }else{
       context.truck = results;
-      // console.log(result0);
+      console.log(context);
       mysql.pool.query(sql[1], function(error, results){
         if(error){
           console.log(JSON.stringify(error))
@@ -111,7 +112,7 @@ app.get('/', function(req,res){
 app.get('/addtruck', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = "SELECT * FROM foodtruck";
+  var sql = "SELECT * FROM foodtruck ORDER BY food_truck_name ASC";
 
   mysql.pool.query(sql, function(error, results){
     if(error){
@@ -148,7 +149,7 @@ app.get('/filter', function(req,res){
 app.get('/timeslot', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = "SELECT * FROM timeslot";
+  var sql = "SELECT * FROM timeslot ORDER BY day_of_week ASC";
 
   mysql.pool.query(sql, function(error, results){
     if(error){
@@ -199,7 +200,7 @@ app.post ('/timeslot', function(req, res){
 app.get('/location', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = "SELECT * FROM location";
+  var sql = "SELECT * FROM location foodtruck ORDER BY location_name ASC";
 
   mysql.pool.query(sql, function(error, results){
     if(error){
@@ -267,7 +268,7 @@ app.post ('/location', function(req, res){
 app.get('/truckschedule', function(req,res){
   var mysql = req.app.get('mysql');
   var context = [];
-  var sql = ["SELECT * FROM foodtruck", "SELECT * FROM location", "SELECT * FROM timeslot", "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id"];
+  var sql = ["SELECT * FROM foodtruck GROUP BY food_truck_name HAVING COUNT(*)=1", "SELECT * FROM location GROUP BY location_name HAVING COUNT(*)=1", "SELECT * FROM timeslot", "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id ORDER BY food_truck_name ASC"];
 
   mysql.pool.query(sql[0], function(error, results){
     if(error){
@@ -290,7 +291,7 @@ app.get('/truckschedule', function(req,res){
               res.write(JSON.stringify(error));
               res.end();
             }else{
-              for (i=0; i < results.length; i++){
+              for (var i=0; i < results.length; i++){
                 switch(results[i].day_of_week){
                   case 0: results[i].day_of_week="Monday";break;
                   case 1: results[i].day_of_week="Tuesday";break;
@@ -316,7 +317,7 @@ app.get('/truckschedule', function(req,res){
                 }else{
                   console.log(results);
                   var i;
-                  for (i=0; i < results.length; i++){
+                  for (var i=0; i < results.length; i++){
                     switch(results[i].day_of_week){
                       case 0: results[i].day_of_week="Monday";break;
                       case 1: results[i].day_of_week="Tuesday";break;
@@ -365,7 +366,35 @@ app.post ('/truckschedule', function(req, res){
 app.get('/website', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = "SELECT * FROM foodtruck INNER JOIN website ON foodtruck.food_truck_id = website.food_truck_id";
+  var sql = ["SELECT * FROM foodtruck ORDER BY food_truck_name ASC", "SELECT * FROM foodtruck INNER JOIN website ON foodtruck.food_truck_id = website.food_truck_id ORDER BY food_truck_name ASC"];
+
+  mysql.pool.query(sql[0], function(error, results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      context.allTrucks = results;
+      mysql.pool.query(sql[1], function(error, results){
+        if(error){
+          console.log(JSON.stringify(error))
+          res.write(JSON.stringify(error));
+          res.end();
+        }else{
+          context.truck = results;
+          res.render('website', context);
+        }
+      });
+    }
+  });
+});
+
+app.get('/search/:s', function(req,res){
+  var context = {};
+  // context.jsscripts = "tools.js";
+  var mysql = req.app.get('mysql');
+  var sql = "SELECT website_name FROM website WHERE website.food_truck_id=" + req.params.s;
+  console.log(sql);
 
   mysql.pool.query(sql, function(error, results){
     if(error){
@@ -373,8 +402,9 @@ app.get('/website', function(req,res){
       res.write(JSON.stringify(error));
       res.end();
     }else{
-      context.truck = results;
-      res.render('website', context);
+      console.log(results);
+      console.log(results[0].website_name);
+      return res.send(results[0].website_name);
     }
   });
 });

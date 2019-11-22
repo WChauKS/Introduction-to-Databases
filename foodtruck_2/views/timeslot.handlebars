@@ -1,5 +1,5 @@
 <br><br><h1>Add Time Slots</h1>
-<form id="addTime action="/timeslot" method="post">
+<form id="addTime" action="/timeslot" method="post">
   Day Of Week:<br>
   <select class="styledSelect" name="dayOfWeek" id="dayOfWeek">
     <option value="0">Monday</option>
@@ -18,8 +18,9 @@
     <option value="2">Dinner</option>
   </select>
    <br><br>
-   	<input type="submit" value="Add Time Slots" id="addTimeSlots">
+   	<input type="submit" value="Add Time Slots" id="addTimeSlots" onclick="addTimeSlot()">
 </form> 
+<!-- <div id="status"></div> -->
 
 <h3>Current Time Slots:</h3>
 <table>

@@ -1,0 +1,31 @@
+<br><br><h1>Truck Schedule</h1>
+<form id="addSchedule action="/truckschedule" method="post"">
+  Food Truck:<br>
+  <select class="styledSelect" name="truckName" id="foodtruckID">
+    {{#each truck}}
+    <option value={{food_truck_id}}>{{food_truck_name}}</option>
+    {{/each}}
+  </select>
+   <br><br>
+  Location:<br>
+  <select class="styledSelect" name="location" id="locationID">
+    {{#each location}}
+    <option value={{location_id}}>{{location_name}}</option>
+    {{/each}}
+  </select>
+   <br><br>
+  Time Slot:<br>
+  <select class="styledSelect" name="timeslot" id="foodtruckID">
+    {{#each time}}
+    <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
+    {{/each}}
+  </select>
+<!--    <br>
+   <br>
+   	<input type="submit" value="Add Truck Schedule" id="addTruckSchedule">
+   <br>
+   	<input type="submit" value="Update Truck Schedule" id="updateTruckSchedule">
+   <br>
+   	<input type="submit" value="Remove Truck Schedule" id="removeTruckSchedule">
+</form> 
+ -->

@@ -14,6 +14,7 @@ CREATE TABLE `timeslot` (
   `time_slot_id` int(5) NOT NULL AUTO_INCREMENT,
   `day_of_week` int(5) NOT NULL,
   `time_of_day` int(5) NOT NULL,
+  CONSTRAINT `UC_timeslot` UNIQUE (`day_of_week`, `time_of_day`),
   PRIMARY KEY (`time_slot_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
