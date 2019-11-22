@@ -2,28 +2,29 @@
 <form id="addWebsite" action="/website" method="post">
   Food Truck:<br>
   <select class="styledSelect" name="foodtrucks" id="webpageFoodTruck">
-    {{#each truck}}
-    <option value={{food_truck_id}}>{{food_truck_name}}</option>
+    {{#each allTrucks}}
+      <option value={{food_truck_id}}>{{food_truck_name}}</option>
     {{/each}}
   </select>
    <br><br>
   Website Link:<br>
-  	<input type="text" name="website">
+  	<input type="text" name="website" required>
    <br><br>
    	<input type="submit" value="Add Website" id="addWebsite">
 </form> 
 <br><br>
 Search for a food truck's Website:<br>
-<form id="seachTruck" action="/search" method="get">
+<form id="seachTruck" action='' method=''>
   Food Truck:<br>
-  <select class="styledSelect" name="foodtrucks" id="foodtruckID">
+  <select class="styledSelect" name="foodtrucks" id="foodtruckID" onchange="searchWebsite(this.value)">
     {{#each truck}}
-    <option value={{food_truck_id}}>{{food_truck_name}}</option>
+      <option value={{food_truck_id}}>{{food_truck_name}}</option>
     {{/each}}
   </select><br><br>
-  <input type="button" value="Search"><br>
+<!--   <input type="button" value="Search" onclick="searchWebsite()"><br> -->
 </form>
-<div><p>{{food_truck_name}} {{website_name}}</p></div>
+<div id="link">{{link}}</div>
+<!-- <div><p>{{food_truck_name}} {{website_name}}</p></div> -->
 
 <h3>Current Food Trucks and Websites:</h3>
 <table>

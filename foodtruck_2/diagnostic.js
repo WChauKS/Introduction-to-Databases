@@ -20,111 +20,142 @@ app.use(express.static('public'));
 //from https://www.freecodecamp.org/forum/t/loading-css-file-on-front-end-solved/25550
 app.use(express.static(path.join(__dirname, '/public')));
 
-app.get('/', function(req,res){
-  var mysql = req.app.get('mysql');
-  var context = [];
-  var sql = ["SELECT * FROM foodtruck GROUP BY food_truck_name HAVING COUNT(*)=1", "SELECT * FROM location GROUP BY location_name HAVING COUNT(*)=1", "SELECT * FROM timeslot"];
+function transform(x){
+  var i;
+  for (var i=0; i < x.length; i++){
+    switch(x[i].day_of_week){
+      case 0: x[i].day_of_week="Monday";break;
+      case 1: x[i].day_of_week="Tuesday";break;
+      case 2: x[i].day_of_week="Wednesday";break;
+      case 3: x[i].day_of_week="Thursday";break;
+      case 4: x[i].day_of_week="Friday";break;
+      case 5: x[i].day_of_week="Saturday";break;
+      case 6: x[i].day_of_week="Sunday";break;
 
-  mysql.pool.query(sql[0], function(error, results){
+    }
+    switch(x[i].time_of_day){
+      case 0: x[i].time_of_day="Breakfast";break;
+      case 1: x[i].time_of_day="Lunch";break;
+      case 2: x[i].time_of_day="Dinner";break;
+    }
+  }
+}
+
+function getAllTrucks(res, mysql, context, complete){
+  var sql = "SELECT * FROM foodtruck GROUP BY food_truck_name HAVING COUNT(*)=1";
+  mysql.pool.query(sql, function(error,results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      context.allTrucks = results;
+      complete();
+    }
+  });
+}
+
+function getTruckTable(res, mysql, context, complete){
+  var sql = "SELECT * FROM foodtruck ORDER BY food_truck_name ASC";
+  mysql.pool.query(sql, function(error,results){
     if(error){
       console.log(JSON.stringify(error))
       res.write(JSON.stringify(error));
       res.end();
     }else{
       context.truck = results;
-      console.log(context);
-      mysql.pool.query(sql[1], function(error, results){
-        if(error){
-          console.log(JSON.stringify(error))
-          res.write(JSON.stringify(error));
-          res.end();
-        }else{
-          context.location = results;
-          mysql.pool.query(sql[2], function(error, results){
-            if(error){
-              console.log(JSON.stringify(error))
-              res.write(JSON.stringify(error));
-              res.end();
-            }else{
-              for (i=0; i < results.length; i++){
-                switch(results[i].day_of_week){
-                  case 0: results[i].day_of_week="Monday";break;
-                  case 1: results[i].day_of_week="Tuesday";break;
-                  case 2: results[i].day_of_week="Wednesday";break;
-                  case 3: results[i].day_of_week="Thursday";break;
-                  case 4: results[i].day_of_week="Friday";break;
-                  case 5: results[i].day_of_week="Saturday";break;
-                  case 6: results[i].day_of_week="Sunday";break;
-
-                }
-                switch(results[i].time_of_day){
-                  case 0: results[i].time_of_day="Breakfast";break;
-                  case 1: results[i].time_of_day="Lunch";break;
-                  case 2: results[i].time_of_day="Dinner";break;
-                }
-              };
-              context.time = results;
-              res.render('home', context);
-            };
-          });
-        };
-      });
-    };
+      complete();
+    }
   });
+}
+
+function getAllLoctions(res, mysql, context, complete){
+  var sql = "SELECT * FROM location GROUP BY location_name HAVING COUNT(*)=1";
+  mysql.pool.query(sql, function(error,results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      context.allLocations = results;
+      complete();
+    }
+  });
+}
+
+function getAllTimeSlots(res, mysql, context, complete){
+  var sql = "SELECT * FROM timeslot";
+  mysql.pool.query(sql, function(error,results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      transform(results);
+      context.allTimeSlots = results;
+      complete();
+    }
+  });
+}
+
+function getScheduleTable(res, mysql, context, complete){
+  var sql = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id ORDER BY food_truck_name ASC";
+  mysql.pool.query(sql, function(error,results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      transform(results);
+      context.schedule = results;
+      complete();
+    }
+  });
+}
+function getWebsiteTable(res, mysql, context, complete){
+  var sql = "SELECT * FROM foodtruck INNER JOIN website ON foodtruck.food_truck_id = website.food_truck_id ORDER BY food_truck_name ASC";
+  mysql.pool.query(sql, function(error,results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      transform(results);
+      context.truck = results;
+      complete();
+    }
+  });
+}
+
+
+app.get('/', function(req,res){
+  var mysql = req.app.get('mysql');
+  var context = {};
+  var callbackCount = 0;
+
+  getAllTrucks(res, mysql, context, complete);
+  getAllLoctions(res, mysql, context, complete);
+  getAllTimeSlots(res, mysql, context, complete);
+  function complete(){
+    callbackCount++;
+    if(callbackCount >= 3){
+      res.render('home', context);
+    }
+  }
 });
-
-// app.get('/',function(req,res){
-//   var context = {};
-//   // var sql = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id";
-//   var sql = "SELECT * FROM foodtruck";
-//   mysql.pool.query(sql, function(error, results) {
-//     if(error){
-//       console.log(JSON.stringify(error))
-//       res.write(JSON.stringify(error));
-//       res.end();
-//     }else{
-//       // console.log(results[0].food_truck_id);
-//       // console.log(results[0].food_truck_name);
-//       var i;
-//       for (i=0; i < results.length; i++){
-//         switch(results[i].day_of_week){
-//           case 0: results[i].day_of_week="Monday";break;
-//           case 1: results[i].day_of_week="Tuesday";break;
-//           case 2: results[i].day_of_week="Wednesday";break;
-//           case 3: results[i].day_of_week="Thursday";break;
-//           case 4: results[i].day_of_week="Friday";break;
-//           case 5: results[i].day_of_week="Saturday";break;
-//           case 6: results[i].day_of_week="Sunday";break;
-
-//         }
-//         switch(results[i].time_of_day){
-//           case 0: results[i].time_of_day="Breakfast";break;
-//           case 1: results[i].time_of_day="Lunch";break;
-//           case 2: results[i].time_of_day="Dinner";break;
-//         }
-//       }
-//       context.truck = results;
-//       res.render('home', context);
-//     }
-//   });
-// });
 
 app.get('/addtruck', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = "SELECT * FROM foodtruck ORDER BY food_truck_name ASC";
-
-  mysql.pool.query(sql, function(error, results){
-    if(error){
-      console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
-    }else{
-      context.truck = results;
-      console.log(context);
+  var callbackCount = 0;
+  
+  getTruckTable(res, mysql, context, complete);
+  function complete(){
+    callbackCount++;
+    if(callbackCount>=1){
       res.render('addtruck', context);
     }
-  });
+  }
 });
 
 app.post ('/addtruck', function(req, res){
@@ -158,24 +189,7 @@ app.get('/timeslot', function(req,res){
       res.end();
     }else{
       console.log(results);
-      var i;
-      for (i=0; i < results.length; i++){
-        switch(results[i].day_of_week){
-          case 0: results[i].day_of_week="Monday";break;
-          case 1: results[i].day_of_week="Tuesday";break;
-          case 2: results[i].day_of_week="Wednesday";break;
-          case 3: results[i].day_of_week="Thursday";break;
-          case 4: results[i].day_of_week="Friday";break;
-          case 5: results[i].day_of_week="Saturday";break;
-          case 6: results[i].day_of_week="Sunday";break;
-
-        }
-        switch(results[i].time_of_day){
-          case 0: results[i].time_of_day="Breakfast";break;
-          case 1: results[i].time_of_day="Lunch";break;
-          case 2: results[i].time_of_day="Dinner";break;
-        }
-      }
+      transform(results);
       context.truck = results;
       res.render('timeslot', context);
     }
@@ -229,121 +243,21 @@ app.post ('/location', function(req, res){
   });
 });
 
-// app.get('/truckschedule', function(req,res){
-//   var mysql = req.app.get('mysql');
-//   var context = {};
-//   var sql = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id";
-
-//   mysql.pool.query(sql, function(error, results){
-//     if(error){
-//       console.log(JSON.stringify(error))
-//       res.write(JSON.stringify(error));
-//       res.end();
-//     }else{
-//       console.log(results);
-//       var i;
-//       for (i=0; i < results.length; i++){
-//         switch(results[i].day_of_week){
-//           case 0: results[i].day_of_week="Monday";break;
-//           case 1: results[i].day_of_week="Tuesday";break;
-//           case 2: results[i].day_of_week="Wednesday";break;
-//           case 3: results[i].day_of_week="Thursday";break;
-//           case 4: results[i].day_of_week="Friday";break;
-//           case 5: results[i].day_of_week="Saturday";break;
-//           case 6: results[i].day_of_week="Sunday";break;
-
-//         }
-//         switch(results[i].time_of_day){
-//           case 0: results[i].time_of_day="Breakfast";break;
-//           case 1: results[i].time_of_day="Lunch";break;
-//           case 2: results[i].time_of_day="Dinner";break;
-//         }
-//       }
-//       context.truck = results;
-//       res.render('truckschedule', context);
-//     }
-//   });
-// });
-
 app.get('/truckschedule', function(req,res){
   var mysql = req.app.get('mysql');
-  var context = [];
-  var sql = ["SELECT * FROM foodtruck GROUP BY food_truck_name HAVING COUNT(*)=1", "SELECT * FROM location GROUP BY location_name HAVING COUNT(*)=1", "SELECT * FROM timeslot", "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id ORDER BY food_truck_name ASC"];
+  var context = {};
+  var callbackCount = 0;
 
-  mysql.pool.query(sql[0], function(error, results){
-    if(error){
-      console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
-    }else{
-      context.truck = results;
-      // console.log(result0);
-      mysql.pool.query(sql[1], function(error, results){
-        if(error){
-          console.log(JSON.stringify(error))
-          res.write(JSON.stringify(error));
-          res.end();
-        }else{
-          context.location = results;
-          mysql.pool.query(sql[2], function(error, results){
-            if(error){
-              console.log(JSON.stringify(error))
-              res.write(JSON.stringify(error));
-              res.end();
-            }else{
-              for (var i=0; i < results.length; i++){
-                switch(results[i].day_of_week){
-                  case 0: results[i].day_of_week="Monday";break;
-                  case 1: results[i].day_of_week="Tuesday";break;
-                  case 2: results[i].day_of_week="Wednesday";break;
-                  case 3: results[i].day_of_week="Thursday";break;
-                  case 4: results[i].day_of_week="Friday";break;
-                  case 5: results[i].day_of_week="Saturday";break;
-                  case 6: results[i].day_of_week="Sunday";break;
-
-                }
-                switch(results[i].time_of_day){
-                  case 0: results[i].time_of_day="Breakfast";break;
-                  case 1: results[i].time_of_day="Lunch";break;
-                  case 2: results[i].time_of_day="Dinner";break;
-                }
-              };
-              context.time = results;
-              mysql.pool.query(sql[3], function(error, results){
-                if(error){
-                  console.log(JSON.stringify(error))
-                  res.write(JSON.stringify(error));
-                  res.end();
-                }else{
-                  console.log(results);
-                  var i;
-                  for (var i=0; i < results.length; i++){
-                    switch(results[i].day_of_week){
-                      case 0: results[i].day_of_week="Monday";break;
-                      case 1: results[i].day_of_week="Tuesday";break;
-                      case 2: results[i].day_of_week="Wednesday";break;
-                      case 3: results[i].day_of_week="Thursday";break;
-                      case 4: results[i].day_of_week="Friday";break;
-                      case 5: results[i].day_of_week="Saturday";break;
-                      case 6: results[i].day_of_week="Sunday";break;
-
-                    }
-                    switch(results[i].time_of_day){
-                      case 0: results[i].time_of_day="Breakfast";break;
-                      case 1: results[i].time_of_day="Lunch";break;
-                      case 2: results[i].time_of_day="Dinner";break;
-                    }
-                  }
-                  context.schedule = results;
-                  res.render('truckschedule', context);
-                }
-              });
-            };
-          });
-        };
-      });
-    };
-  });
+  getAllTrucks(res, mysql, context, complete);
+  getAllLoctions(res, mysql, context, complete);
+  getAllTimeSlots(res, mysql, context, complete);
+  getScheduleTable(res, mysql, context, complete)
+  function complete(){
+    callbackCount++;
+    if(callbackCount >= 4){
+      res.render('truckschedule', context);
+    }
+  }
 });
 
 app.post ('/truckschedule', function(req, res){
@@ -366,27 +280,16 @@ app.post ('/truckschedule', function(req, res){
 app.get('/website', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = ["SELECT * FROM foodtruck ORDER BY food_truck_name ASC", "SELECT * FROM foodtruck INNER JOIN website ON foodtruck.food_truck_id = website.food_truck_id ORDER BY food_truck_name ASC"];
+  var callbackCount = 0;
 
-  mysql.pool.query(sql[0], function(error, results){
-    if(error){
-      console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
-    }else{
-      context.allTrucks = results;
-      mysql.pool.query(sql[1], function(error, results){
-        if(error){
-          console.log(JSON.stringify(error))
-          res.write(JSON.stringify(error));
-          res.end();
-        }else{
-          context.truck = results;
-          res.render('website', context);
-        }
-      });
+  getAllTrucks(res, mysql, context, complete);
+  getWebsiteTable(res, mysql, context, complete);
+  function complete(){
+    callbackCount++;
+    if(callbackCount >= 2){
+      res.render('website', context);
     }
-  });
+  }
 });
 
 app.get('/search/:s', function(req,res){
@@ -423,10 +326,6 @@ app.post ('/website', function(req, res){
     }
   });
 });
-
-// app.get('/contact', function(req,res){
-//   res.render('contact');
-// });
 
 /*Function to reset the database and add generic data*/
 /*url to create & reset database*/

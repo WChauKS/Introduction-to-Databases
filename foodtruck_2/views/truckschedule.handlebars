@@ -2,21 +2,21 @@
 <form id="addSchedule action="/truckschedule" method="post"">
   Food Truck:<br>
   <select class="styledSelect" name="truckName" id="foodtruckID">
-    {{#each truck}}
+    {{#each allTrucks}}
     <option value={{food_truck_id}}>{{food_truck_name}}</option>
     {{/each}}
   </select>
    <br><br>
   Location:<br>
   <select class="styledSelect" name="location" id="locationID">
-    {{#each location}}
+    {{#each allLocations}}
     <option value={{location_id}}>{{location_name}}</option>
     {{/each}}
   </select>
    <br><br>
   Time Slot:<br>
   <select class="styledSelect" name="timeslot" id="foodtruckID">
-    {{#each time}}
+    {{#each allTimeSlots}}
     <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
     {{/each}}
   </select>
