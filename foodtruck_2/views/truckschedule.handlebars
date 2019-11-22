@@ -32,21 +32,51 @@
 <h3>Current Truck Schedule:</h3>
 <table>
   <thead>
+    <th>ScheduleID</th>
     <th>Food Truck</th>
     <th>Location</th>
-    <th>Day of the Week</th>
-    <th>Time of Day</th>
+    <th>Time Slot</th>
   </thead>
   <tbody>
     {{#each schedule}}
     <tr>
+      <td>{{schedule_id}}</td>
       <td>{{food_truck_name}}</td>
       <td>{{location_name}}</td>
-      <td>{{day_of_week}}</td>
-      <td>{{time_of_day}}</td>
-      <td><button onclick="deleteSchedule({{food_truck_name}}, {{location_name}}, {{day_of_week}}, {{time_of_day}})">Delete</button></td>
-      <td><button onclick="updateSchedule({{food_truck_name}}, {{location_name}}, {{day_of_week}}, {{time_of_day}})">Update</button></td>
+      <td>{{day_of_week}}, {{time_of_day}}</td>
     </tr>
     {{/each}}
   </tbody>
 </table>
+<div id="updated"></div>
+
+<h3>Modify Truck Schedule:</h3>
+<table>
+  <thead>
+    <th>ScheduleID</th>
+    <th>Food Truck</th>
+    <th>Location</th>
+    <th>Time Slot</th>
+  </thead>
+  <tbody>
+    {{#each schedule}}
+    <tr>
+      <td>{{schedule_id}}</td>
+      <td>{{food_truck_name}}</td>
+      <td><select class="styledSelect" name="location" id="updateLocation">
+    {{#each ../allLocations}}
+    <option value={{location_id}}>{{location_name}}</option>
+    {{/each}}
+  </select></td>
+      <td><select class="styledSelect" name="timeslot" id="updateTime">
+    {{#each ../allTimeSlots}}
+    <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
+    {{/each}}
+  </select></td>
+      <td><button onclick="deleteSchedule({{schedule_id}})">Delete</button></td>
+      <td><button onclick="updateSchedule({{schedule_id}})">Update</button></td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+<div id="updated"></div>

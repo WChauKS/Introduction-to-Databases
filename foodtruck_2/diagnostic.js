@@ -112,6 +112,7 @@ function getScheduleTable(res, mysql, context, complete){
     }
   });
 }
+
 function getWebsiteTable(res, mysql, context, complete){
   var sql = "SELECT * FROM foodtruck INNER JOIN website ON foodtruck.food_truck_id = website.food_truck_id ORDER BY food_truck_name ASC";
   mysql.pool.query(sql, function(error,results){
@@ -275,7 +276,36 @@ app.post ('/truckschedule', function(req, res){
   });
 });
 
-// app.use('/website', require('./truck.js'));
+app.put('/truckschedule/:schedule_id/:location_id/:time_slot_id', function (req, res){
+  var mysql = req.app.get('mysql');
+  var sql = "UPDATE truckschedule SET location_id = ?, time_slot_id = ? WHERE schedule_id = ?";
+  var inserts = [req.params.location_id, req.params.time_slot_id, req.params.schedule_id];
+  sql = mysql.pool.query(sql, inserts, function(error, results, fields){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      // console.log(sql);
+      res.status(200).end();
+    }
+  })
+})
+
+app.delete('/truckschedule/:schedule_id', function (req, res){
+  var mysql = req.app.get('mysql');
+  var sql = "DELETE FROM truckschedule WHERE schedule_id = ?";
+  var inserts = req.params.schedule_id;
+  sql = mysql.pool.query(sql, inserts, function(error, results, fields){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      res.status(200).end();
+    }
+  })
+})
 
 app.get('/website', function(req,res){
   var mysql = req.app.get('mysql');
@@ -326,6 +356,22 @@ app.post ('/website', function(req, res){
     }
   });
 });
+
+// app.get('/reset-database', function(req,res){
+//   var mysql = req.app.get('mysql');
+//   var context = {};
+//   var sql = "SET FOREIGN_KEY_CHECKS = 0; DROP TABLE IF EXISTS `website`; DROP TABLE IF EXISTS `truckschedule`; DROP TABLE IF EXISTS `location`; DROP TABLE IF EXISTS `timeslot`; DROP TABLE IF EXISTS `foodtruck`; SET FOREIGN_KEY_CHECKS = 1; CREATE TABLE `foodtruck` (`food_truck_id` int(5) NOT NULL AUTO_INCREMENT, `food_truck_name` VARCHAR(50) NOT NULL,PRIMARY KEY (`food_truck_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8; LOCK TABLES `foodtruck` WRITE; INSERT INTO `foodtruck` VALUES (1, 'Moyzilla'), (2, 'IQ Cooking On Wheels'), (3, 'Say Pao de Queijo'); UNLOCK TABLES;  CREATE TABLE `timeslot` (`time_slot_id` int(5) NOT NULL AUTO_INCREMENT, `day_of_week` int(5) NOT NULL, `time_of_day` int(5) NOT NULL, CONSTRAINT `UC_timeslot` UNIQUE (`day_of_week`, `time_of_day`), PRIMARY KEY (`time_slot_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8; LOCK TABLES `timeslot` WRITE; INSERT INTO `timeslot` VALUES (1, 3, 1), (2, 0, 1); UNLOCK TABLES; CREATE TABLE `location` (`location_id` int(5) NOT NULL AUTO_INCREMENT, `location_name` VARCHAR(50) NOT NULL, PRIMARY KEY (`location_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8; LOCK TABLES `location` WRITE; INSERT INTO `location` VALUES(1, 'Belvidere Street'), (2, 'Boston Medical Center'), (3, 'Boston Public Library'), (4, 'Boston University East'); UNLOCK TABLES; CREATE TABLE `website` (`website_id` int(5) NOT NULL AUTO_INCREMENT, `website_name` VARCHAR(100) NOT NULL, `food_truck_id` int(5) NOT NULL, PRIMARY KEY (`website_id`), CONSTRAINT `fk_truck_website` FOREIGN KEY (`food_truck_id`) REFERENCES `foodtruck` (`food_truck_id`) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8; LOCK TABLES `website` WRITE; INSERT INTO `website` VALUES (1,'http://www.moyzillaboston.com/', 1), (2, 'https://twitter.com/dragonrollgrill?lang=en', 2), (3,'https://saypao.com/', 3); UNLOCK TABLES; CREATE TABLE `truckschedule` (`schedule_id` int(5) NOT NULL AUTO_INCREMENT, `food_truck_id` int(5), `time_slot_id` int(5), `location_id` int(5), PRIMARY KEY (`schedule_id`), CONSTRAINT `fk_schedule_truck` FOREIGN KEY (`food_truck_id`) REFERENCES `foodtruck` (`food_truck_id`) ON DELETE CASCADE, CONSTRAINT `fk_schedule_timeslot` FOREIGN KEY (`time_slot_id`) REFERENCES `timeslot` (`time_slot_id`) ON DELETE CASCADE, CONSTRAINT `fk_schedule_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8; LOCK TABLES `truckschedule` WRITE; INSERT INTO `truckschedule` VALUES (1, 1, 1, 1), (2, 2, 2, 2), (3, 3, 2, 3); UNLOCK TABLES;"
+//   mysql.pool.query(sql, function(error, results){
+//     if(error){
+//       console.log(JSON.stringify(error))
+//       res.write(JSON.stringify(error));
+//       res.end();
+//     }else{
+//       context.statusMsg = "Database successfully reset";
+//       res.render('home', context);
+//     }
+//   });
+// });
 
 /*Function to reset the database and add generic data*/
 /*url to create & reset database*/

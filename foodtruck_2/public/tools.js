@@ -26,30 +26,32 @@ function searchWebsite(truckID) {
 //   // console.log(truckID);
 // }
 
-// function updateSchedule(name, location, day, time) {
-//   xhttp = new XMLHttpRequest();
-//   xhttp.onreadystatechange = function() {
-//     if (this.readyState == 4 && this.status == 200) {
-//       if(this.responseText == 'ER_DUP_ENTRY'){
-//         document.getElementById("table").innerHTML = this.responseText;
-//       }
-//     }
-//   };
-//   xhttp.open("PUT", "/truckSchedule/" + encodeURI(name) + "/" + encodeURI(location) + "/" + encodeURI() + "/", true);
-//   xhttp.send();
-//   // console.log(truckID);
-// }
-
-function deleteSchedule() {
+function updateSchedule(schedule) {
+  var location = document.getElementById("updateLocation").value;
+  var time = document.getElementById("updateTime").value;
   xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      if(this.responseText == 'ER_DUP_ENTRY'){
-        document.getElementById("table").innerHTML = this.responseText;
-      }
+      window.location.reload(true);
+      console.log("success");
+      console.log(schedule);
+      console.log(location);
+      console.log(time);
     }
   };
-  xhttp.open("PUT", "/truckSchedule", true);
+  xhttp.open("PUT", "/truckschedule/" + encodeURI(schedule) + "/" + encodeURI(location) + "/"+ encodeURI(time), true);
   xhttp.send();
-  // console.log(truckID);
+}
+
+function deleteSchedule(schedule) {
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      window.location.reload(true);
+      console.log("success");
+    }
+  };
+  xhttp.open("DELETE", "/truckschedule/" + encodeURI(schedule), true);
+  xhttp.send();
+  console.log(schedule);
 }

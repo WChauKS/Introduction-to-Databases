@@ -51,6 +51,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `truckschedule`;
 CREATE TABLE `truckschedule` (
+  `schedule_id` int(5) NOT NULL AUTO_INCREMENT,
   `food_truck_id` int(5),
   `time_slot_id` int(5),
   `location_id` int(5),
@@ -61,7 +62,7 @@ CREATE TABLE `truckschedule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `truckschedule` WRITE;
-INSERT INTO `truckschedule` VALUES (1, 1, 1), (2, 2, 2), (3, 2, 3);
+INSERT INTO `truckschedule` VALUES (1, 1, 1, 1), (2, 2, 2, 2), (3, 3, 2, 3);
 UNLOCK TABLES;
 
 -- SHOW TABLES
