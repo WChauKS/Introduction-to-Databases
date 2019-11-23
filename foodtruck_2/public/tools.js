@@ -12,6 +12,21 @@ function searchWebsite(truckID) {
   console.log(truckID);
 }
 
+function loadWebsite() {
+  var truckID = document.getElementById("foodtruckID").value;
+  // var searchTruck = document.getElementById('foodtruckID').value;
+  // window.location = '/website/search/' + encodeURI(searchTruck)
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("link").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/search/" + encodeURI(truckID), true);
+  xhttp.send();
+  console.log(truckID);
+}
+
 // function addTimeSlot() {
 //   xhttp = new XMLHttpRequest();
 //   xhttp.onreadystatechange = function() {
@@ -58,10 +73,14 @@ function deleteSchedule(schedule) {
 
 function locationValue(location){
   document.getElementById("updateLocation").value = location;
-  console.log(document.getElementById("updateLocation").value);
+  // console.log(document.getElementById("updateLocation").value);
 }
 
 function timeValue(time){
   document.getElementById("updateTime").value = time;
-  console.log(document.getElementById("updateTime").value);
+  // console.log(document.getElementById("updateTime").value);
 }
+
+window.addEventListener('load', function() {
+    loadWebsite();
+})

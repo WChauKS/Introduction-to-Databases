@@ -21,7 +21,6 @@ app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, '/public')));
 
 function transform(x){
-  var i;
   for (var i=0; i < x.length; i++){
     switch(x[i].day_of_week){
       case 0: x[i].day_of_week="Monday";break;
