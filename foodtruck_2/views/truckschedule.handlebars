@@ -63,12 +63,12 @@
     <tr>
       <td>{{schedule_id}}</td>
       <td>{{food_truck_name}}</td>
-      <td><select class="styledSelect" name="location" id="updateLocation">
+      <td><select class="styledSelect" name="location" id="updateLocation" onchange="locationValue(this.value)">
     {{#each ../allLocations}}
     <option value={{location_id}}>{{location_name}}</option>
     {{/each}}
   </select></td>
-      <td><select class="styledSelect" name="timeslot" id="updateTime">
+      <td><select class="styledSelect" name="timeslot" id="updateTime" onchange="timeValue(this.value)">
     {{#each ../allTimeSlots}}
     <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
     {{/each}}

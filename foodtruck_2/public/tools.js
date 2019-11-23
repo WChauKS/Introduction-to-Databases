@@ -34,9 +34,9 @@ function updateSchedule(schedule) {
     if (this.readyState == 4 && this.status == 200) {
       window.location.reload(true);
       console.log("success");
-      console.log(schedule);
       console.log(location);
       console.log(time);
+      console.log(schedule);
     }
   };
   xhttp.open("PUT", "/truckschedule/" + encodeURI(schedule) + "/" + encodeURI(location) + "/"+ encodeURI(time), true);
@@ -54,4 +54,14 @@ function deleteSchedule(schedule) {
   xhttp.open("DELETE", "/truckschedule/" + encodeURI(schedule), true);
   xhttp.send();
   console.log(schedule);
+}
+
+function locationValue(location){
+  document.getElementById("updateLocation").value = location;
+  console.log(document.getElementById("updateLocation").value);
+}
+
+function timeValue(time){
+  document.getElementById("updateTime").value = time;
+  console.log(document.getElementById("updateTime").value);
 }

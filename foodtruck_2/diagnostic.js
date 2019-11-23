@@ -286,8 +286,8 @@ app.put('/truckschedule/:schedule_id/:location_id/:time_slot_id', function (req,
       res.write(JSON.stringify(error));
       res.end();
     }else{
-      // console.log(sql);
-      res.status(200).end();
+      console.log(sql);
+      res.render('truckschedule');
     }
   })
 })
