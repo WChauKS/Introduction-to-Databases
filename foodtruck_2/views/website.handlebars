@@ -1,3 +1,4 @@
+<script src="loadWebsite.js" type="text/javascript"></script>
 <br><br><h1>Website</h1>
 <form id="addWebsite" action="/website" method="post">
   Food Truck:<br>
@@ -12,8 +13,9 @@
    <br><br>
    	<input type="submit" value="Add Website" id="addWebsite">
 </form> 
+<div>{{error}}</div>
 <br><br>
-Search for a food truck's Website:<br>
+<h3>Search for a food truck's Website:</h3>
 <form id="seachTruck" action='' method=''>
   Food Truck:<br>
   <select class="styledSelect" name="foodtrucks" id="foodtruckID" onchange="searchWebsite(this.value)">

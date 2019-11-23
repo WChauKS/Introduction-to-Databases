@@ -21,7 +21,7 @@
    	<input type="submit" value="Add Time Slots" id="addTimeSlots" onclick="addTimeSlot()">
 </form> 
 <!-- <div id="status"></div> -->
-
+<div>{{error}}</div>
 <h3>Current Time Slots:</h3>
 <table>
   <thead>
@@ -30,7 +30,7 @@
     <th>Time of Day</th>
   </thead>
   <tbody>
-    {{#each truck}}
+    {{#each timeslot}}
     <tr>
       <td>{{time_slot_id}}</td>
       <td>{{day_of_week}}</td>

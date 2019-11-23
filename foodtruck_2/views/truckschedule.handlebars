@@ -27,7 +27,8 @@
 <!--    	<input type="submit" value="Update Truck Schedule" id="updateTruckSchedule">
    <br>
    	<input type="submit" value="Remove Truck Schedule" id="removeTruckSchedule"> -->
-</form> 
+</form>
+<div>{{error}}</div>
 
 <h3>Current Truck Schedule:</h3>
 <table>
@@ -63,12 +64,12 @@
     <tr>
       <td>{{schedule_id}}</td>
       <td>{{food_truck_name}}</td>
-      <td><select class="styledSelect" name="location" id="updateLocation" onchange="locationValue(this.value)">
+      <td><select class="styledTableSelect" name="location" id="updateLocation" onchange="locationValue(this.value)">
     {{#each ../allLocations}}
     <option value={{location_id}}>{{location_name}}</option>
     {{/each}}
   </select></td>
-      <td><select class="styledSelect" name="timeslot" id="updateTime" onchange="timeValue(this.value)">
+      <td><select class="styledTableSelect" name="timeslot" id="updateTime" onchange="timeValue(this.value)">
     {{#each ../allTimeSlots}}
     <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
     {{/each}}

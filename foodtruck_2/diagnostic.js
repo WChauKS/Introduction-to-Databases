@@ -82,6 +82,20 @@ function getAllLoctions(res, mysql, context, complete){
   });
 }
 
+function getLocationTable(res, mysql, context, complete){
+  var sql = "SELECT * FROM location foodtruck ORDER BY location_name ASC";
+  mysql.pool.query(sql, function(error, results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      context.truck = results;
+      complete();
+    }
+  });
+}
+
 function getAllTimeSlots(res, mysql, context, complete){
   var sql = "SELECT * FROM timeslot";
   mysql.pool.query(sql, function(error,results){
@@ -96,6 +110,24 @@ function getAllTimeSlots(res, mysql, context, complete){
     }
   });
 }
+
+function getTimeSlotTable(res, mysql, context, complete){
+  var sql = "SELECT * FROM timeslot ORDER BY day_of_week ASC";
+
+  mysql.pool.query(sql, function(error, results){
+    if(error){
+      console.log(JSON.stringify(error))
+      res.write(JSON.stringify(error));
+      res.end();
+    }else{
+      console.log(results);
+      transform(results);
+      context.timeslot = results;
+      complete();
+    }
+  });
+}
+
 
 function getScheduleTable(res, mysql, context, complete){
   var sql = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id INNER JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id ORDER BY food_truck_name ASC";
@@ -126,7 +158,6 @@ function getWebsiteTable(res, mysql, context, complete){
     }
   });
 }
-
 
 app.get('/', function(req,res){
   var mysql = req.app.get('mysql');
@@ -162,14 +193,25 @@ app.post ('/addtruck', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO foodtruck (food_truck_name) VALUES (?)";
   var inserts = [req.body.truckName];
+  var context = {};
+  var callbackCount = 0;
+
   sql = mysql.pool.query(sql, inserts, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
+      if(error.code == 'ER_DUP_ENTRY'){
+        context.error = 'That entry already exists in the database!';
+        getTruckTable(res, mysql, context, complete);
+        function complete(){
+          callbackCount++;
+          if(callbackCount>=1){
+            res.render('addtruck', context);
+          }
+        }
+      }
     }else{
       res.redirect('/addtruck');
-    }
+    };
   });
 });
 
@@ -180,31 +222,37 @@ app.get('/filter', function(req,res){
 app.get('/timeslot', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = "SELECT * FROM timeslot ORDER BY day_of_week ASC";
-
-  mysql.pool.query(sql, function(error, results){
-    if(error){
-      console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
-    }else{
-      console.log(results);
-      transform(results);
-      context.truck = results;
+  var callbackCount = 0;
+  
+  getTimeSlotTable(res, mysql, context, complete);
+  function complete(){
+    callbackCount++;
+    if(callbackCount>=1){
       res.render('timeslot', context);
     }
-  });
+  }
 });
 
 app.post ('/timeslot', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO timeslot (day_of_week, time_of_day) VALUES (?,?)";
   var inserts = [req.body.dayOfWeek, req.body.timeOfDay];
+  var context = {};
+  var callbackCount = 0;
+
   sql = mysql.pool.query(sql, inserts, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
+      if(error.code == 'ER_DUP_ENTRY'){
+        context.error = 'That entry already exists in the database!';
+        getTimeSlotTable(res, mysql, context, complete);
+        function complete(){
+          callbackCount++;
+          if(callbackCount>=1){
+            res.render('timeslot', context);
+          }
+        }
+      }
     }else{
       res.redirect('/timeslot');
     }
@@ -214,29 +262,37 @@ app.post ('/timeslot', function(req, res){
 app.get('/location', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
-  var sql = "SELECT * FROM location foodtruck ORDER BY location_name ASC";
-
-  mysql.pool.query(sql, function(error, results){
-    if(error){
-      console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
-    }else{
-      context.truck = results;
+  var callbackCount = 0;
+  
+  getLocationTable(res, mysql, context, complete);
+  function complete(){
+    callbackCount++;
+    if(callbackCount>=1){
       res.render('location', context);
     }
-  });
+  }
 });
 
 app.post ('/location', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO location (location_name) VALUES (?)";
   var inserts = [req.body.location];
+  var context = {};
+  var callbackCount = 0;
+
   sql = mysql.pool.query(sql, inserts, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
+      if(error.code == 'ER_DUP_ENTRY'){
+        context.error = 'That entry already exists in the database!';
+        getLocationTable(res, mysql, context, complete);
+        function complete(){
+          callbackCount++;
+          if(callbackCount>=1){
+            res.render('location', context);
+          }
+        }
+      }
     }else{
       res.redirect('/location');
     }
@@ -264,11 +320,25 @@ app.post ('/truckschedule', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO truckschedule (food_truck_id, location_id, time_slot_id) VALUES (?,?,?)";
   var inserts = [req.body.truckName, req.body.location, req.body.timeslot];
+  var context = {};
+  var callbackCount = 0;
+  
   sql = mysql.pool.query(sql, inserts, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
+      if(error.code == 'ER_DUP_ENTRY'){
+        context.error = 'That entry already exists in the database!';
+        getAllTrucks(res, mysql, context, complete);
+        getAllLoctions(res, mysql, context, complete);
+        getAllTimeSlots(res, mysql, context, complete);
+        getScheduleTable(res, mysql, context, complete)
+        function complete(){
+          callbackCount++;
+          if(callbackCount >= 4){
+            res.render('truckschedule', context);
+          }
+        }
+      }
     }else{
       res.redirect('/truckschedule');
     }
@@ -345,11 +415,23 @@ app.post ('/website', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO website (website_name, food_truck_id) VALUES (?, ?)";
   var inserts = [req.body.website, req.body.foodtrucks];
+  var context = {};
+  var callbackCount = 0;
+
   sql = mysql.pool.query(sql, inserts, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
-      res.write(JSON.stringify(error));
-      res.end();
+      if(error.code == 'ER_DUP_ENTRY'){
+        context.error = 'That entry already exists in the database!';
+        getAllTrucks(res, mysql, context, complete);
+        getWebsiteTable(res, mysql, context, complete);
+        function complete(){
+          callbackCount++;
+          if(callbackCount>=2){
+            res.render('website', context);
+          }
+        }
+      }
     }else{
       res.redirect('/website');
     }

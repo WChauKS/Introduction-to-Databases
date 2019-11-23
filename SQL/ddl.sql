@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS `foodtruck`;
 CREATE TABLE `foodtruck` (
   `food_truck_id` int(5) NOT NULL AUTO_INCREMENT,
   `food_truck_name` VARCHAR(50) NOT NULL,
+  CONSTRAINT `UC_foodtruck` UNIQUE (`food_truck_name`),
   PRIMARY KEY (`food_truck_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -29,6 +30,7 @@ DROP TABLE IF EXISTS `location`;
 CREATE TABLE `location` (
   `location_id` int(5) NOT NULL AUTO_INCREMENT,
   `location_name` VARCHAR(50) NOT NULL,
+  CONSTRAINT `UC_location` UNIQUE (`location_name`),
   PRIMARY KEY (`location_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -42,6 +44,7 @@ CREATE TABLE `website` (
   `website_name` VARCHAR(100) NOT NULL,
   `food_truck_id` int(5) NOT NULL,
   PRIMARY KEY (`website_id`),
+  CONSTRAINT `UC_website` UNIQUE (`website_name`),
   CONSTRAINT `fk_truck_website` FOREIGN KEY (`food_truck_id`) REFERENCES `foodtruck` (`food_truck_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -55,7 +58,8 @@ CREATE TABLE `truckschedule` (
   `food_truck_id` int(5),
   `time_slot_id` int(5),
   `location_id` int(5),
-  PRIMARY KEY (`food_truck_id`, `time_slot_id`, `location_id`),
+  PRIMARY KEY (`schedule_id`),
+  CONSTRAINT `UC_schedule` UNIQUE (`food_truck_id`, `time_slot_id`, `location_id`),
   CONSTRAINT `fk_schedule_truck` FOREIGN KEY (`food_truck_id`) REFERENCES `foodtruck` (`food_truck_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_schedule_timeslot` FOREIGN KEY (`time_slot_id`) REFERENCES `timeslot` (`time_slot_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_schedule_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`) ON DELETE CASCADE

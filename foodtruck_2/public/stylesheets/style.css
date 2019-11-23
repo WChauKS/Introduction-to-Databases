@@ -177,6 +177,11 @@ form {
 .styledSelect {
 	/*float:right;*/
 	display: inline-block;
-	width: 30%;
+	width: 45%;
 }
 
+.styledTableSelect {
+	/*float:right;*/
+	display: inline-block;
+	width: 100%;
+}
