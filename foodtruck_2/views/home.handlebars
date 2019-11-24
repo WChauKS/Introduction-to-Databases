@@ -1,13 +1,16 @@
 <br><br><h1>Filter Food Trucks</h1>
-<form>
+
+<form action = "/filter-foodtrucks" method = "get">
   Food Truck:<br>
   <select class="styledSelect" name="foodtrucks" id="foodtruckID">
+    <option value = -1>All</option>
     {{#each allTrucks}}
     <option value={{food_truck_id}}>{{food_truck_name}}</option>
     {{/each}}
   </select><br><br>
   Location:<br>
   <select class="styledSelect" name="location" id="locationID">
+    <option value = -1>All</option>
     {{#each allLocations}}
     <option value={{location_id}}>{{location_name}}</option>
     {{/each}}
@@ -15,13 +18,38 @@
    <br>
   Time Slot:<br>
   <select class="styledSelect" name="timeslot" id="timeslotID">
+    <option value = -1>All</option>
     {{#each allTimeSlots}}
     <option value={{time_slot_id}}>{{day_of_week}}, {{time_of_day}}</option>
     {{/each}}
   </select><br><br>
-  <input type="submit" value="Filter" id="filter"><br>
+  <input type="submit" value="Filter" id="filterButton"><br>
 </form>
+
 <form action = "/reset-database" method = "get">
 <input type="submit" value="Reset Database" id="resetDatabaseButton">
 </form>
+
+<br>
 <div><p>{{statusMsg}}</p></div>
+<br>
+
+<h3>Filtered Results:</h3>
+<table>
+  <thead>
+    <th>Food Truck</th>
+    <th>Location</th>
+    <th>Day</th>
+    <th>Time</th>
+  </thead>
+  <tbody>
+    {{#each filteredResult}}
+    <tr>
+      <td>{{food_truck_name}}</td>
+      <td>{{location_name}}</td>
+      <td>{{day_of_week}}</td>
+      <td>{{time_of_day}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

@@ -179,7 +179,7 @@ app.get('/addtruck', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
   var callbackCount = 0;
-  
+
   getTruckTable(res, mysql, context, complete);
   function complete(){
     callbackCount++;
@@ -223,7 +223,7 @@ app.get('/timeslot', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
   var callbackCount = 0;
-  
+
   getTimeSlotTable(res, mysql, context, complete);
   function complete(){
     callbackCount++;
@@ -263,7 +263,7 @@ app.get('/location', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
   var callbackCount = 0;
-  
+
   getLocationTable(res, mysql, context, complete);
   function complete(){
     callbackCount++;
@@ -322,7 +322,7 @@ app.post ('/truckschedule', function(req, res){
   var inserts = [req.body.truckName, req.body.location, req.body.timeslot];
   var context = {};
   var callbackCount = 0;
-  
+
   sql = mysql.pool.query(sql, inserts, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
@@ -436,6 +436,160 @@ app.post ('/website', function(req, res){
       res.redirect('/website');
     }
   });
+});
+
+
+app.get("/filter-foodtrucks", function(req,res){
+  var context = {};
+
+  var foodTruckID = Number(req.query.foodtrucks);
+  var locationID = Number(req.query.location);
+  var timeSlotID = Number(req.query.timeslot);
+
+  var sqlQueryString;
+  var paramsExist = false;
+  var sqlParams;
+
+  //Choosing the correct query
+  if (foodTruckID == -1 && locationID == -1 && timeSlotID == -1) {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id";
+  }
+  else if (foodTruckID == -1 && locationID == -1) {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id WHERE truckschedule.time_slot_id = ?";
+    paramsExist = true;
+    sqlParams = [timeSlotID];
+  }
+  else if (foodTruckID == -1 && timeSlotID == -1) {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id WHERE truckschedule.location_id = ?";
+    paramsExist = true;
+    sqlParams = [locationID];
+  }
+  else if (locationID == -1 && timeSlotID == -1) {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id WHERE truckschedule.food_truck_id = ?";
+    paramsExist = true;
+    sqlParams = [foodTruckID];
+  }
+  else if (foodTruckID == -1) {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id WHERE truck.schedule.location_id = ? AND truckschedule.time_slot_id = ?";
+    paramsExist = true;
+    sqlParams = [locationID, timeSlotID];
+  }
+  else if (timeSlotID == -1) {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id WHERE truckschedule.food_truck_id = ? AND truckschedule.location_id = ?";
+    paramsExist = true;
+    sqlParams = [foodTruckID, locationID];
+  }
+  else if (locationID == -1) {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id WHERE truckschedule.food_truck_id = ? AND truckschedule.time_slot_id = ?";
+    paramsExist = true;
+    sqlParams = [foodTruckID, timeSlotID];
+  }
+  else {
+    sqlQueryString = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id = foodtruck.food_truck_id INNER JOIN timeslot ON truckschedule.time_slot_id = timeslot.time_slot_id INNER JOIN location ON truckschedule.location_id = location.location_id WHERE truckschedule.food_truck_id = ? AND truckschedule.time_slot_id = ? AND truckschedule.location_id = ?";
+    paramsExist = true;
+    sqlParams = [foodTruckID, timeSlotID, locationID];
+  }
+
+  //Sql params have None case
+  if (paramsExist) {
+    mysql.pool.query(sqlQueryString, sqlParams, function(error, results){
+      console.log(sqlQueryString);
+      console.log(sqlParams);
+      if(error){
+        console.log(JSON.stringify(error))
+        res.write(JSON.stringify(error));
+        res.end();
+
+      }else{
+        transform(results);
+        context.filteredResult = results;
+        console.log(context.filteredResult);
+
+        if (context.filteredResult.length == 0) {
+          context.statusMsg = "No Schedules Found";
+        }
+        else {
+          context.statusMsg = "Search Successful";
+        }
+
+        var callbackCount = 0;
+
+        getAllTrucks(res, mysql, context, complete);
+        getAllLoctions(res, mysql, context, complete);
+        getAllTimeSlots(res, mysql, context, complete);
+        function complete(){
+          callbackCount++;
+          if(callbackCount >= 3){
+            res.render('home', context);
+          }
+        }
+      }
+    });
+  }
+  else {
+    mysql.pool.query(sqlQueryString, function(error, results){
+      if(error){
+        console.log(JSON.stringify(error))
+        res.write(JSON.stringify(error));
+        res.end();
+      }else{
+        transform(results);
+        context.filteredResult = results;
+        console.log(context.filteredResult);
+
+        if (context.filteredResult.length == 0) {
+          context.statusMsg = "No Schedules Found";
+        }
+        else {
+          context.statusMsg = "Search Successful";
+        }
+
+        var callbackCount = 0;
+
+        getAllTrucks(res, mysql, context, complete);
+        getAllLoctions(res, mysql, context, complete);
+        getAllTimeSlots(res, mysql, context, complete);
+        function complete(){
+          callbackCount++;
+          if(callbackCount >= 3){
+            res.render('home', context);
+          }
+        }
+      }
+    });
+  }
+
+});
+
+app.get("/reset-database", function(req,res){
+  var context = {};
+
+  var sqlQueryString = "DROP TABLE IF EXISTS `truckschedule`; DROP TABLE IF EXISTS `website`; DROP TABLE IF EXISTS `foodtruck`; DROP TABLE IF EXISTS `timeslot`; CREATE TABLE `foodtruck` (`food_truck_id` int(5) NOT NULL AUTO_INCREMENT,`food_truck_name` VARCHAR(50) NOT NULL, CONSTRAINT `UC_foodtruck` UNIQUE (`food_truck_name`), PRIMARY KEY (`food_truck_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8; CREATE TABLE `timeslot` (`time_slot_id` int(5) NOT NULL AUTO_INCREMENT,`day_of_week` int(5) NOT NULL,`time_of_day` int(5) NOT NULL, CONSTRAINT `UC_timeslot` UNIQUE (`day_of_week`, `time_of_day`), PRIMARY KEY (`time_slot_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8; DROP TABLE IF EXISTS `location`; CREATE TABLE `location` (`location_id` int(5) NOT NULL AUTO_INCREMENT, `location_name` VARCHAR(50) NOT NULL, CONSTRAINT `UC_location` UNIQUE (`location_name`), PRIMARY KEY (`location_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8; CREATE TABLE `truckschedule` (`schedule_id` int(5) NOT NULL AUTO_INCREMENT, `food_truck_id` int(5), `time_slot_id` int(5), `location_id` int(5), PRIMARY KEY (`schedule_id`), CONSTRAINT `UC_schedule` UNIQUE (`food_truck_id`, `time_slot_id`, `location_id`), CONSTRAINT `fk_schedule_truck` FOREIGN KEY (`food_truck_id`) REFERENCES `foodtruck` (`food_truck_id`) ON DELETE CASCADE, CONSTRAINT `fk_schedule_timeslot` FOREIGN KEY (`time_slot_id`) REFERENCES `timeslot` (`time_slot_id`) ON DELETE CASCADE, CONSTRAINT `fk_schedule_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8; CREATE TABLE `website` (`website_id` int(5) NOT NULL AUTO_INCREMENT, `website_name` VARCHAR(100) NOT NULL, `food_truck_id` int(5) NOT NULL, PRIMARY KEY (`website_id`), CONSTRAINT `UC_website` UNIQUE (`website_name`), CONSTRAINT `fk_truck_website` FOREIGN KEY (`food_truck_id`) REFERENCES `foodtruck` (`food_truck_id`) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8; LOCK TABLES `foodtruck` WRITE; INSERT INTO `foodtruck` VALUES (1, 'Moyzilla'), (2, 'IQ Cooking On Wheels'), (3, 'Say Pão de Queijo'); UNLOCK TABLES; LOCK TABLES `location` WRITE; INSERT INTO `location` VALUES (1, 'Belvidere Street'), (2, 'Boston Medical Center'), (3, 'Boston Public Library'), (4, 'Boston University East'); UNLOCK TABLES; LOCK TABLES `timeslot` WRITE; INSERT INTO `timeslot` VALUES (1, 3, 1), (2, 0, 1); UNLOCK TABLES; LOCK TABLES `website` WRITE; INSERT INTO `website` VALUES (1,'http://www.moyzillaboston.com/', 1), (2, 'https://twitter.com/dragonrollgrill?lang=en', 2), (3,'https://saypao.com/', 3); UNLOCK TABLES; LOCK TABLES `truckschedule` WRITE; INSERT INTO `truckschedule` VALUES (1, 1, 1, 1), (2, 2, 2, 2), (3, 3, 2, 3); UNLOCK TABLES;";
+
+    mysql.pool.query(sqlQueryString, function(error, results){
+      console.log(sqlQueryString);
+
+      if(error){
+        console.log(JSON.stringify(error))
+        res.write(JSON.stringify(error));
+        res.end();
+
+      }else{
+        context.statusMsg = "Database successfully Reset";
+
+        getAllTrucks(res, mysql, context, complete);
+        getAllLoctions(res, mysql, context, complete);
+        getAllTimeSlots(res, mysql, context, complete);
+        function complete(){
+          callbackCount++;
+          if(callbackCount >= 3){
+            res.render('home', context);
+          }
+        }
+
+      }
+    });
+
 });
 
 // app.get('/reset-database', function(req,res){
