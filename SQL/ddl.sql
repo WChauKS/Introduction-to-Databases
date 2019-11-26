@@ -44,7 +44,9 @@ CREATE TABLE `website` (
   `website_name` VARCHAR(100) NOT NULL,
   `food_truck_id` int(5) NOT NULL,
   PRIMARY KEY (`website_id`),
+  CONSTRAINT `UC_website_truck` UNIQUE (`website_name`, `food_truck_id`),
   CONSTRAINT `UC_website` UNIQUE (`website_name`),
+  CONSTRAINT `UC_truck` UNIQUE (`food_truck_id`),
   CONSTRAINT `fk_truck_website` FOREIGN KEY (`food_truck_id`) REFERENCES `foodtruck` (`food_truck_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
