@@ -5,7 +5,12 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 
 var app = express();
-var handlebars = require('express-handlebars').create({defaultLayout:'main'});
+
+//added helper to determine default drop down
+var handlebars = require('express-handlebars').create({
+	defaultLayout:'main',
+	helpers: require('./public/helpers.js')
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
