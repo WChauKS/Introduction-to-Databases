@@ -1,3 +1,7 @@
+// function gets called when website.handlebars is first loaded
+// allows for the page to always have the first truck's website field to be populated
+// automatically routed to '/search/:s' which gets the website of the first truck
+// Result: website of the truck is displayed
 function loadWebsite() {
   var truckID = document.getElementById("foodtruckID").value;
   // var searchTruck = document.getElementById('foodtruckID').value;
@@ -13,6 +17,7 @@ function loadWebsite() {
   console.log(truckID);
 }
 
+// calls loadWebsite to display the website for the first truck upon loading website.handlebars
 window.addEventListener('load', function() {
     loadWebsite();
 })
