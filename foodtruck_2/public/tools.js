@@ -18,8 +18,11 @@ function searchWebsite(truckID) {
 // Result: updates the location and time for the truck in that row in the truckschedule table in the database
 //          page is re-rendered with the changes made
 function updateSchedule(schedule) {
-  var location = document.getElementById("updateLocation").value;
-  var time = document.getElementById("updateTime").value;
+  updateLocation = "location:"+schedule;
+  updateTime = "time:"+schedule;
+
+  var location = document.getElementById(updateLocation).value;
+  var time = document.getElementById(updateTime).value;
   xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -51,18 +54,18 @@ function deleteSchedule(schedule) {
   console.log(schedule);
 }
 
-// function gets called when dropdown menu is changed from truckschedule.handlebars
-// updates value in order to process the DELETE and UPDATE functions
-// Result: value of updateLocation is changed to selection
-function locationValue(location){
-  document.getElementById("updateLocation").value = location;
-  // console.log(document.getElementById("updateLocation").value);
-}
+// // function gets called when dropdown menu is changed from truckschedule.handlebars
+// // updates value in order to process the DELETE and UPDATE functions
+// // Result: value of updateLocation is changed to selection
+// function locationValue(location){
+//   document.getElementById("updateLocation").value = location;
+//   // console.log(document.getElementById("updateLocation").value);
+// }
 
-// function gets called when dropdown menu is changed from truckschedule.handlebars
-// updates value in order to process the DELETE and UPDATE functions
-// Result: value of updateTime is changed to selection
-function timeValue(time){
-  document.getElementById("updateTime").value = time;
-  // console.log(document.getElementById("updateTime").value);
-}
+// // function gets called when dropdown menu is changed from truckschedule.handlebars
+// // updates value in order to process the DELETE and UPDATE functions
+// // Result: value of updateTime is changed to selection
+// function timeValue(time){
+//   document.getElementById("updateTime").value = time;
+//   // console.log(document.getElementById("updateTime").value);
+// }

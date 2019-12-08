@@ -65,12 +65,14 @@
     <tr>
       <td>{{schedule_id}}</td>
       <td>{{food_truck_name}}</td>
-      <td><select class="styledTableSelect" name="location" id="updateLocation" onchange="locationValue(this.value)">
+      <!-- <td><select class="styledTableSelect" name="location" id="updateLocation" value={{location_id}} onchange="locationValue(this.value)"> -->
+        <td><select class="styledTableSelect" name="location" id=location:{{schedule_id}} value={{location_id}}>
     {{#each ../allLocations}}
     <option value={{location_id}} {{{select location_id ../location_id}}}>{{location_name}}</option>
     {{/each}}
   </select></td>
-      <td><select class="styledTableSelect" name="timeslot" id="updateTime" onchange="timeValue(this.value)">
+      <!-- <td><select class="styledTableSelect" name="timeslot" id="updateTime" value={{time_slot_id}} onchange="timeValue(this.value)"> -->
+        <td><select class="styledTableSelect" name="timeslot" id=time:{{schedule_id}} value={{location_id}}>
     <option value = "NULL">NULL</option>
     {{#each ../allTimeSlots}}
     <option value={{time_slot_id}} {{{select time_slot_id ../time_slot_id}}}>{{day_of_week}}, {{time_of_day}}</option>
