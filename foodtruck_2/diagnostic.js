@@ -6,7 +6,7 @@ var router = express.Router();
 
 var app = express();
 
-//added helper to determine default drop down
+// handlebar helper to determine default selected values in the drop down
 var handlebars = require('express-handlebars').create({
 	defaultLayout:'main',
 	helpers: require('./public/helpers.js')
@@ -25,6 +25,7 @@ app.use(express.static('public'));
 //from https://www.freecodecamp.org/forum/t/loading-css-file-on-front-end-solved/25550
 app.use(express.static(path.join(__dirname, '/public')));
 
+// converts day_of_week and time_of_day from time_slot_id from int to the proper string for readability
 function transform(x){
   for (var i=0; i < x.length; i++){
     switch(x[i].day_of_week){
@@ -45,6 +46,7 @@ function transform(x){
   }
 }
 
+// converts day_of_week and time_of_day from time_slot_id from int to the proper string for readability with NULL options added
 function transformNull(x) {
   for (var i = 0; i < x.length; i++) {
     if (x[i].day_of_week == 0) {
@@ -87,6 +89,7 @@ function transformNull(x) {
   }
 }
 
+// gets all the trucks from the foodtruck table in the DB for populating the drop down menus in the 'Home', 'Truck Schedule', and 'Website' pages
 function getAllTrucks(res, mysql, context, complete){
   var sql = "SELECT * FROM foodtruck GROUP BY food_truck_name HAVING COUNT(*)=1";
   mysql.pool.query(sql, function(error,results){
@@ -101,6 +104,7 @@ function getAllTrucks(res, mysql, context, complete){
   });
 }
 
+// gets the trucks from the foodtruck table in the DB for display in the 'Add Food Truck' page
 function getTruckTable(res, mysql, context, complete){
   var sql = "SELECT * FROM foodtruck ORDER BY food_truck_name ASC";
   mysql.pool.query(sql, function(error,results){
@@ -115,6 +119,7 @@ function getTruckTable(res, mysql, context, complete){
   });
 }
 
+// gets all the locations from the location table in the DB for populating the drop down menus in the 'Home', 'Add Locations', and 'Truck Schedule' pages
 function getAllLoctions(res, mysql, context, complete){
   var sql = "SELECT * FROM location GROUP BY location_name HAVING COUNT(*)=1";
   mysql.pool.query(sql, function(error,results){
@@ -129,6 +134,7 @@ function getAllLoctions(res, mysql, context, complete){
   });
 }
 
+// gets all the locations from the location table in the DB for display in the 'Add Locations' page
 function getLocationTable(res, mysql, context, complete){
   var sql = "SELECT * FROM location foodtruck ORDER BY location_name ASC";
   mysql.pool.query(sql, function(error, results){
@@ -142,7 +148,7 @@ function getLocationTable(res, mysql, context, complete){
     }
   });
 }
-
+// gets all the time slots from the timeslot table in the DB for populating the drop down menus in the 'Home', 'Add Time Slots', and 'Truck Schedule' pages
 function getAllTimeSlots(res, mysql, context, complete){
   var sql = "SELECT * FROM timeslot";
   mysql.pool.query(sql, function(error,results){
@@ -158,6 +164,7 @@ function getAllTimeSlots(res, mysql, context, complete){
   });
 }
 
+// gets all the time slots from the timeslot table in the DB for display in the 'Add Time Slots' page
 function getTimeSlotTable(res, mysql, context, complete){
   var sql = "SELECT * FROM timeslot ORDER BY day_of_week ASC";
 
@@ -175,7 +182,7 @@ function getTimeSlotTable(res, mysql, context, complete){
   });
 }
 
-
+// gets the all schedule data from the truckschedule table in the DB for display in the 'Truck Schedule' page
 function getScheduleTable(res, mysql, context, complete){
   var sql = "SELECT * FROM truckschedule INNER JOIN foodtruck ON truckschedule.food_truck_id=foodtruck.food_truck_id INNER JOIN location ON truckschedule.location_id=location.location_id LEFT JOIN timeslot ON truckschedule.time_slot_id=timeslot.time_slot_id ORDER BY food_truck_name ASC";
   mysql.pool.query(sql, function(error,results){
@@ -191,6 +198,7 @@ function getScheduleTable(res, mysql, context, complete){
   });
 }
 
+// gets all the food trucks with their websites from the website table in the DB for display in the 'Website' page
 function getWebsiteTable(res, mysql, context, complete){
   var sql = "SELECT * FROM foodtruck INNER JOIN website ON foodtruck.food_truck_id = website.food_truck_id ORDER BY food_truck_name ASC";
   mysql.pool.query(sql, function(error,results){
@@ -206,6 +214,7 @@ function getWebsiteTable(res, mysql, context, complete){
   });
 }
 
+// renders the 'Home' page with truck, location, time slot dropdowns
 app.get('/', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
@@ -222,6 +231,7 @@ app.get('/', function(req,res){
   }
 });
 
+// renders the 'Add Food Trucks' page with foodtruck table
 app.get('/addtruck', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
@@ -236,6 +246,8 @@ app.get('/addtruck', function(req,res){
   }
 });
 
+// INSERTS a food truck into the foodtruck table and re-renders 'Add Food Trucks' page
+// If duplicate is encountered, error is rendered on the page
 app.post ('/addtruck', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO foodtruck (food_truck_name) VALUES (?)";
@@ -266,6 +278,7 @@ app.get('/filter', function(req,res){
   res.render('filter');
 });
 
+// renders the 'Add Time Slot' page with timeslot table
 app.get('/timeslot', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
@@ -280,6 +293,8 @@ app.get('/timeslot', function(req,res){
   }
 });
 
+// INSERTS a time slot into the timeslot table and re-renders 'Add Time Slots' page
+// If duplicate is encountered, error is rendered on the page
 app.post ('/timeslot', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO timeslot (day_of_week, time_of_day) VALUES (?,?)";
@@ -306,6 +321,7 @@ app.post ('/timeslot', function(req, res){
   });
 });
 
+// renders the 'Add Locations' page with location table
 app.get('/location', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
@@ -320,6 +336,8 @@ app.get('/location', function(req,res){
   }
 });
 
+// INSERTS a location into the location table and re-renders 'Add Locations' page
+// If duplicate is encountered, error is rendered on the page
 app.post ('/location', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO location (location_name) VALUES (?)";
@@ -346,6 +364,7 @@ app.post ('/location', function(req, res){
   });
 });
 
+// renders the 'Truck Schedule' page with truck, location, time slot dropdowns, and truckschedule table
 app.get('/truckschedule', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
@@ -363,11 +382,14 @@ app.get('/truckschedule', function(req,res){
   }
 });
 
+// INSERTS a schedule into the truckschedule table and re-renders 'Truck Schedule' page
+// If duplicate is encountered, error is rendered on the page
 app.post ('/truckschedule', function(req, res){
   var mysql = req.app.get('mysql');
   var sql;
   var inserts;
 
+  // NULL option selected
   if (req.body.timeslot == "NULL") {
       var sql = "INSERT INTO truckschedule (food_truck_id, location_id, time_slot_id) VALUES (?, ?, null)";
       var inserts = [req.body.truckName, req.body.location];
@@ -401,11 +423,14 @@ app.post ('/truckschedule', function(req, res){
   });
 });
 
+// UPDATES the schedule in the truckschedule table by taking the schedule_id, location_id, and the time_slot_id selected from the dropdowns
+// re-renders the 'Truck Schedule' page with the updated table
 app.put('/truckschedule/:schedule_id/:location_id/:time_slot_id', function (req, res){
   var mysql = req.app.get('mysql');
   var sql;
   var inserts;
   
+  // NULL option selected
   if (req.params.time_slot_id == "NULL") {
       sql = "UPDATE truckschedule SET location_id=?, time_slot_id=null WHERE schedule_id=?";
       inserts = [req.params.location_id, req.params.schedule_id];
@@ -426,6 +451,8 @@ app.put('/truckschedule/:schedule_id/:location_id/:time_slot_id', function (req,
   })
 })
 
+// UPDATES the schedule in the truckschedule table by taking the schedule_id assigned to the delete btn
+// re-renders the 'Truck Schedule' page with the updated table
 app.delete('/truckschedule/:schedule_id', function (req, res){
   var mysql = req.app.get('mysql');
   var sql = "DELETE FROM truckschedule WHERE schedule_id = ?";
@@ -441,6 +468,8 @@ app.delete('/truckschedule/:schedule_id', function (req, res){
   })
 })
 
+// renders the 'Website' page with foodtruck dropdown and website table
+// on page load, website for the first element in dropdown is displayed
 app.get('/website', function(req,res){
   var mysql = req.app.get('mysql');
   var context = {};
@@ -456,6 +485,8 @@ app.get('/website', function(req,res){
   }
 });
 
+// SEARCH function occurs onchange in the food truck dropdown
+// result is displayed underneath the dropdown
 app.get('/search/:s', function(req,res){
   var context = {};
   // context.jsscripts = "tools.js";
@@ -477,6 +508,8 @@ app.get('/search/:s', function(req,res){
   });
 });
 
+// INSERTS a website into the website table and re-renders 'Website' page
+// If duplicate is encountered, error is rendered on the page
 app.post ('/website', function(req, res){
   var mysql = req.app.get('mysql');
   var sql = "INSERT INTO website (website_name, food_truck_id) VALUES (?, ?)";
@@ -504,7 +537,9 @@ app.post ('/website', function(req, res){
   });
 });
 
-
+// FILTER by food truck, location, or time slot from the truckschedule table
+// query is determined by option selected from the dropdowns (All, food_truck_id, location_id, and time_slot_id)
+// results are rendered on the 'Home' page
 app.get("/filter-foodtrucks", function(req,res){
   var context = {};
 
@@ -627,17 +662,20 @@ app.get("/filter-foodtrucks", function(req,res){
 
 });
 
+// Other Error
 app.use(function(req,res){
   res.status(404);
   res.render('404');
 });
 
+// Server Side Error
 app.use(function(err, req, res, next){
   console.error(err.stack);
   res.status(500);
   res.render('500');
 });
 
+// prints server start message to server console
 app.listen(app.get('port'), function(){
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
