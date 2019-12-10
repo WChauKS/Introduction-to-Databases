@@ -136,7 +136,7 @@ function getAllLoctions(res, mysql, context, complete){
 
 // gets all the locations from the location table in the DB for display in the 'Add Locations' page
 function getLocationTable(res, mysql, context, complete){
-  var sql = "SELECT * FROM location foodtruck ORDER BY location_name ASC";
+  var sql = "SELECT * FROM location ORDER BY location_name ASC";
   mysql.pool.query(sql, function(error, results){
     if(error){
       console.log(JSON.stringify(error))
