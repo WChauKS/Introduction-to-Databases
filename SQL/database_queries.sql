@@ -33,7 +33,7 @@ SELECT * FROM timeslot ORDER BY day_of_week ASC;
 
 -- Query for adding a new website
 INSERT INTO website (website_name, food_truck_id)
-  VALUES(:website_name, food_truck_id)
+  VALUES(:website_name, :food_truck_id)
 
 -- Query for searching for a food truck's website
 SELECT website_name FROM website WHERE food_truck_id = (:food_truck_id)
